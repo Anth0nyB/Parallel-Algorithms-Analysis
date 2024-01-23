@@ -11,25 +11,21 @@ PAPI_INCLUDE = ../libs/papi-7.0.1/include
 PAPI_LIB = ../libs/papi-7.0.1/lib
 MKL_LIB = ${MKLROOT}/lib/intel64
 
-flags = -lgfortran -lpthread -lgomp
+flags = -lgfortran -lpthread -lgomp -fopenmp
 papiflags = -lpapi -lpfm
 mklflags = libmkl_blas95_ilp64.a -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
 
 
-all: time perf
+all: ob mkl def
 
-dgels: time perf
+ob: dgels.cpp
+	${CC} -o dgels_ob ${flags} ${papiflags} dgels.cpp ${liblapack_ob} ${OPENBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
-time: dgels_time.cpp
-	${CC} -o dgels_def_t ${flags} dgels_time.cpp ${liblapack_def} ${REFBLAS}
-	${CC} -o dgels_ob_t ${flags} dgels_time.cpp ${liblapack_ob} ${OPENBLAS}
-	${CC} -o dgels_mkl_t ${flags} dgels_time.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl}
-
-perf: dgels_perf.cpp
-	${CC} -o dgels_def_p ${flags} ${papiflags} dgels_perf.cpp ${liblapack_def} ${REFBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
-	${CC} -o dgels_ob_p ${flags} ${papiflags} dgels_perf.cpp ${liblapack_ob} ${OPENBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
-	${CC} -o dgels_mkl_p ${flags} ${papiflags} dgels_perf.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl} -I${PAPI_INCLUDE} -L${PAPI_LIB}
+mkl: dgels.cpp
+	${CC} -o dgels_mkl ${flags} ${papiflags} dgels.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl} -I${PAPI_INCLUDE} -L${PAPI_LIB}
+	
+def: dgels.cpp
+	${CC} -o dgels_def ${flags} ${papiflags} dgels.cpp ${liblapack_def} ${REFBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
 clean:
-	rm dgels_def_t dgels_ob_t dgels_mkl_t dgels_def_p dgels_ob_p dgels_mkl_p
-
+	rm dgels_ob dgels_mkl dgels_def 
