@@ -19,13 +19,13 @@ mklflags = libmkl_blas95_ilp64.a -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
 all: ob mkl def
 
 ob: dgels.cpp
-	${CC} -o dgels_ob ${flags} ${papiflags} dgels.cpp ${liblapack_ob} ${OPENBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
+	${CC} -o dgels_ob ${flags} ${papiflags} ../perf.cpp dgels.cpp ${liblapack_ob} ${OPENBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
 mkl: dgels.cpp
-	${CC} -o dgels_mkl ${flags} ${papiflags} dgels.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl} -I${PAPI_INCLUDE} -L${PAPI_LIB}
+	${CC} -o dgels_mkl ${flags} ${papiflags} ../perf.cpp dgels.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 	
 def: dgels.cpp
-	${CC} -o dgels_def ${flags} ${papiflags} dgels.cpp ${liblapack_def} ${REFBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
+	${CC} -o dgels_def ${flags} ${papiflags} ../perf.cpp dgels.cpp  ${liblapack_def} ${REFBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
 clean:
 	rm dgels_ob dgels_mkl dgels_def 

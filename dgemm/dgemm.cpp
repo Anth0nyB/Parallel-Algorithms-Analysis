@@ -1,9 +1,8 @@
 #include <omp.h>
 
 #include <iostream>
-#include <vector>
 
-#include "papi.h"
+#include "../perf.h"
 
 #define LAPACK_INT long int
 
@@ -18,25 +17,6 @@ void dgemm_(char *TRANSA, char *TRANSB, LAPACK_INT *m, LAPACK_INT *n, LAPACK_INT
 }
 #endif
 
-int papi_setup(int &n_events) {
-    PAPI_library_init(PAPI_VER_CURRENT);
-
-    // Holds the counters to be measured
-    int event_set = PAPI_NULL;
-    PAPI_create_eventset(&event_set);
-    std::vector<int> events = {PAPI_TOT_CYC, PAPI_TOT_INS};
-    n_events = events.size();
-    PAPI_add_events(event_set, events.data(), events.size());
-
-    return event_set;
-}
-
-void papi_cleanup(int &event_set) {
-    PAPI_cleanup_eventset(event_set);
-    PAPI_destroy_eventset(&event_set);
-    PAPI_shutdown();
-}
-
 void fillMat(double *mat, int len, int fill = 1) {
 #pragma omp parallel for
     for (int i = 0; i < len; i++) {
@@ -50,6 +30,20 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    int n_threads = omp_get_max_threads();
+
+    // Setup for PAPI
+    int *event_sets = (int *)malloc(n_threads * sizeof(int));
+
+    std::vector<std::string> events;
+    int n_events = get_events(events);
+
+    int ret = PAPI_library_init(PAPI_VER_CURRENT);
+    if (ret != PAPI_VER_CURRENT) {
+        fprintf(stderr, "Error inititalizing PAPI: %s\n", PAPI_strerror(ret));
+    }
+
+    // Setup for dgemm
     char Nchar = 'N';
 
     LAPACK_INT m = atoi(argv[1]);
@@ -69,23 +63,27 @@ int main(int argc, char **argv) {
 
     fillMat(A, m * k);
     fillMat(B, k * n);
-    fillMat(C, m * n, 0);
 
-    int n_events;
-    int event_set = papi_setup(n_events);
-    PAPI_start(event_set);
+    // Run dgemm for all events
+    double average_time = 0;
+    for (int i = 0; i < n_events; i += N_SIMUL_EVENTS) {
+        fillMat(C, m * n, 0);
 
-    dgemm_(&Nchar, &Nchar, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
+        papi_profile_start(event_sets, events.at(i));
 
-    PAPI_stop(event_set, nullptr);
+        double start, end;
+        start = omp_get_wtime();
 
-    // Read and print the counter values
-    long long counters[n_events];
-    PAPI_read(event_set, counters);
-    std::cout << counters[0] << "," << counters[1];
+        dgemm_(&Nchar, &Nchar, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
 
-    papi_cleanup(event_set);
+        end = omp_get_wtime();
+        average_time += end - start;
 
+        papi_profile_end(event_sets, events, i);
+    }
+    cout << "Runtime: " << average_time / n_events << endl;
+
+    PAPI_shutdown();
     delete[] A;
     delete[] B;
     delete[] C;

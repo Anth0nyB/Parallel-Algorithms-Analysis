@@ -11,25 +11,21 @@ PAPI_INCLUDE = ../libs/papi-7.0.1/include
 PAPI_LIB = ../libs/papi-7.0.1/lib
 MKL_LIB = ${MKLROOT}/lib/intel64
 
-flags = -lgfortran -lpthread -lgomp
+flags = -lgfortran -lpthread -lgomp -fopenmp
 papiflags = -lpapi -lpfm
 mklflags = libmkl_blas95_ilp64.a -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
 
 
-all: time perf
+all: ob mkl def
 
-dgemm: time perf
+ob: dgemm.cpp
+	${CC} -o dgemm_ob ${flags} ${papiflags} ../perf.cpp dgemm.cpp ${liblapack_ob} ${OPENBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
-time: dgemm_time.cpp
-	${CC} -o dgemm_def_t ${flags} dgemm_time.cpp ${liblapack_def} ${REFBLAS}
-	${CC} -o dgemm_ob_t ${flags} dgemm_time.cpp ${liblapack_ob} ${OPENBLAS}
-	${CC} -o dgemm_mkl_t ${flags} dgemm_time.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl}
-
-perf: dgemm_perf.cpp
-	${CC} -o dgemm_def_p ${flags} ${papiflags} dgemm_perf.cpp ${liblapack_def} ${REFBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
-	${CC} -o dgemm_ob_p ${flags} ${papiflags} dgemm_perf.cpp ${liblapack_ob} ${OPENBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
-	${CC} -o dgemm_mkl_p ${flags} ${papiflags} dgemm_perf.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl} -I${PAPI_INCLUDE} -L${PAPI_LIB}
+mkl: dgemm.cpp
+	${CC} -o dgemm_mkl ${flags} ${papiflags} ../perf.cpp dgemm.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl} -I${PAPI_INCLUDE} -L${PAPI_LIB}
+	
+def: dgemm.cpp
+	${CC} -o dgemm_def ${flags} ${papiflags} ../perf.cpp dgemm.cpp ${liblapack_def} ${REFBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
 clean:
-	rm dgemm_def_t dgemm_ob_t dgemm_mkl_t dgemm_def_p dgemm_ob_p dgemm_mkl_p
-
+	rm dgemm_ob dgemm_mkl dgemm_def

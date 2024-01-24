@@ -9,7 +9,7 @@
 using namespace std;
 
 extern "C" {
-extern int dgels_(char *TRANSA, LAPACK_INT *m, LAPACK_INT *n, LAPACK_INT *NRHS, double *A, LAPACK_INT *LDA, double *B, LAPACK_INT *LDB, double *WORK, LAPACK_INT *LWORK, LAPACK_INT *INFO);
+extern int dgeqrf_(LAPACK_INT *m, LAPACK_INT *n, double *A, LAPACK_INT *lda, double *tau, double *work, LAPACK_INT *lwork, LAPACK_INT *info);
 }
 
 void fillMat(double *mat, int len) {
@@ -20,8 +20,8 @@ void fillMat(double *mat, int len) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 4) {
-        cout << "usage: " << argv[0] << " <m> <n> <NHRS>" << endl;
+    if (argc != 3) {
+        cout << "usage: " << argv[0] << " <m> <n>" << endl;
         return -1;
     }
 
@@ -38,30 +38,24 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Error inititalizing PAPI: %s\n", PAPI_strerror(ret));
     }
 
-    // Setup for dgels
+    // Setup for dgeqrf
     LAPACK_INT m = atoi(argv[1]);
     LAPACK_INT n = atoi(argv[2]);
-    LAPACK_INT NRHS = atoi(argv[3]);
     LAPACK_INT lda = m;
-    LAPACK_INT ldb = m > n ? m : n;
-    LAPACK_INT info;
+    LAPACK_INT info = 0;
     LAPACK_INT lwork = -1;
 
-    char Nchar = 'N';
-
     double *A = new double[lda * n];
-    double *B = new double[ldb * NRHS];
+    double *tau = new double[m > n ? m : n];
 
     // Get optimal lwork value
     double wkopt;
-    dgels_(&Nchar, &m, &n, &NRHS, A, &lda, B, &ldb, &wkopt, &lwork, &info);
+    dgeqrf_(&m, &n, A, &lda, tau, &wkopt, &lwork, &info);
     lwork = (LAPACK_INT)wkopt;
 
     fillMat(A, lda * n);
-    fillMat(B, ldb * NRHS);
     double *work;
 
-    // Get counter data for each event
     double average_time = 0;
     for (int i = 0; i < n_events; i += N_SIMUL_EVENTS) {
         info = 0;
@@ -73,8 +67,7 @@ int main(int argc, char **argv) {
         double start, end;
         start = omp_get_wtime();
 
-        // Run dgels
-        dgels_(&Nchar, &m, &n, &NRHS, A, &lda, B, &ldb, work, &lwork, &info);
+        dgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
 
         end = omp_get_wtime();
         average_time += end - start;
@@ -86,9 +79,9 @@ int main(int argc, char **argv) {
     cout << "Runtime: " << average_time / n_events << endl;
 
     PAPI_shutdown();
+
     delete[] A;
-    delete[] B;
-    free(event_sets);
+    delete[] tau;
 
     return (int)info;
 }
