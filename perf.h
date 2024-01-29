@@ -1,7 +1,7 @@
 #ifndef PERF_H
 #define PERF_H
 
-#define native_events_path "../events/working_events.txt"
+#define native_events_path "../events/hand_picked_events.txt"
 #define N_SIMUL_EVENTS 1
 
 #include <string>
