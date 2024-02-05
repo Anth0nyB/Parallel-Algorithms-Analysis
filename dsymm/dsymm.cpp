@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 
     // Run dsymm for all events
     double average_time = 0;
-    for (int i = 0; i < n_events; i += N_SIMUL_EVENTS) {
+    for (int i = 0; i < n_events; ++i) {
         fillMat(C, m * n, 0);
 
         papi_profile_start(event_sets, events.at(i));
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
         end = omp_get_wtime();
         average_time += end - start;
 
-        papi_profile_end(event_sets, events, i);
+        papi_profile_end(n_threads, event_sets, events.at(i));
     }
     cout << "Runtime: " << average_time / n_events << endl;
 

@@ -1,0 +1,449 @@
+==========================================================================
+
+ix86arch events
+
+--------------------------------------------------------------------------
+
+*   ix86arch::UNHALTED_CORE_CYCLES
+        clock cycles when the clock signal on the specific core is running
+        aliases:
+        -> perf::PERF_COUNT_HW_CPU_CYCLES
+        -> perf::CYCLES
+        -> perf::CPU-CYCLES
+        -> UNHALTED_CORE_CYCLES
+        -> CPU_CLK_UNHALTED
+        -> CPU_CLK_THREAD_UNHALTED
+    
+*   ix86arch::INSTRUCTION_RETIRED
+        count the number of instructions at retirement
+        aliases: 
+        -> perf::PERF_COUNT_HW_INSTRUCTIONS
+        -> perf::INSTRUCTIONS
+        -> INSTRUCTION_RETIRED
+        -> INSTRUCTIONS_RETIRED
+
+*   ix86arch::UNHALTED_REFERENCE_CYCLES
+        count reference clock cycles while the clock signal on the specific core is running
+
+*   ix86arch::LLC_REFERENCES
+        count each request originating from the core to reference a cache line in the last level cache
+        aliases:
+        -> perf::PERF_COUNT_HW_CACHE_REFERENCES
+        -> perf::CACHE-REFERENCES
+
+*   ix86arch::LLC_MISSES
+        count each cache miss condition for references to the last level cache
+        aliases:
+        -> perf::PERF_COUNT_HW_CACHE_MISSES
+        -> perf::CACHE-MISSES
+
+*   ix86arch::BRANCH_INSTRUCTIONS_RETIRED
+        count branch instructions at retirement
+        aliases:
+        -> perf::PERF_COUNT_HW_BRANCH_INSTRUCTIONS
+        -> perf::BRANCH-INSTRUCTIONS
+        -> perf::BRANCHES
+        -> BRANCH_INSTRUCTIONS_RETIRED
+        -> BR_INST_RETIRED:ALL_BRANCHES
+
+*   ix86arch::MISPREDICTED_BRANCH_RETIRED
+        count mispredicted branch instructions at retirement
+        aliases:
+        -> perf::PERF_COUNT_HW_BRANCH_MISSES
+        -> perf::BRANCH-MISSES
+        -> MISPREDICTED_BRANCH_RETIRED
+        -> BR_MISP_RETIRED:ALL_BRANCHES
+
+==========================================================================
+
+PERF_COUNT_HW events (generalized hardware CPU events)
+
+--------------------------------------------------------------------------
+
+*   perf::PERF_COUNT_HW_BUS_CYCLES
+        bus cycles
+        aliases:
+        -> perf::BUS-CYCLES
+
+*   perf::PERF_COUNT_HW_REF_CPU_CYCLES
+        total cpu cycles (unaffected by cpu frequency scaling)
+        aliases:
+        -> perf::REF-CYCLES
+
+==========================================================================
+
+PERF_COUNT_SW events (provided by the kernel)
+
+--------------------------------------------------------------------------
+
+*   perf::PERF_COUNT_SW_CPU_CLOCK
+        reports the cpu clock (per cpu timer)
+        aliases:
+        -> perf::CPU-CLOCK
+
+    perf::PERF_COUNT_SW_TASK_CLOCK  (NOTE: same as above counter b/c only one task for these programs)
+        reports the cpu clock count specific to the running task
+        aliases:
+        -> perf::TASK-CLOCK
+
+*   perf::PERF_COUNT_SW_PAGE_FAULTS
+        number of page faults
+        aliases:
+        -> perf::FAULTS
+
+*   perf::PERF_COUNT_SW_CONTEXT_SWITCHES    (Not getting any occurrences for size 10k matrix)
+        number of context switches (kernel space)
+        aliases:
+        -> perf::CONTEXT-SWITCHES
+        -> perf::CS
+
+*   perf::PERF_COUNT_SW_CPU_MIGRATIONS  (Not getting any occurrences for size 10k matrix)
+        number of times the process has migrated to a new cpu
+        aliases:
+        -> perf::CPU-MIGRATIONS
+        -> perf::MIGRATIONS
+
+*   perf::PERF_COUNT_SW_PAGE_FAULTS_MIN
+        number of minor page faults
+        aliases:
+        -> perf::MINOR-FAULTS
+
+*   perf::PERF_COUNT_SW_PAGE_FAULTS_MAJ
+        number of major page faults
+        aliases:
+        -> perf::MAJOR-FAULTS
+
+*   perf::PERF_COUNT_SW_CGROUP_SWITCHES
+        number of context switches to a task in a different cgroup
+        aliases:
+        -> perf::CGROUP-SWITCHES
+
+==========================================================================
+
+PERF_TYPE_HW_CACHE events
+
+--------------------------------------------------------------------------
+
+L1 Data Cache:
+--------------
+
+perf::PERF_COUNT_HW_CACHE_L1D
+    [append (:READ or :WRITE) and (:ACCESS or :MISS)]
+    [NOTE -> :WRITE:MISS not supported]
+
+
+*   perf::PERF_COUNT_HW_CACHE_L1D:READ:ACCESS
+        L1 data cache read accesses
+        aliases:
+        -> perf::L1-DCACHE-LOADS
+
+*   perf::PERF_COUNT_HW_CACHE_L1D:READ:MISS
+        L1 data cache read misses
+        aliases:
+        -> perf::L1-DCACHE-LOAD-MISSES
+
+*   perf::PERF_COUNT_HW_CACHE_L1D:WRITE:ACCESS
+        L1 data cache write accesses
+        aliases:
+        -> perf::L1-DCACHE-STORES
+
+
+L1 Instruction Cache:
+---------------------
+
+perf::PERF_COUNT_HW_CACHE_L1I
+    [NOTE -> only :READ:MISS supported]
+
+
+*   perf::PERF_COUNT_HW_CACHE_L1I:READ:MISS
+        L1 instruction cache read misses
+        aliases:
+        -> perf::L1-ICACHE-LOAD-MISSES
+
+
+LL Cache:
+---------
+
+perf::PERF_COUNT_HW_CACHE_LL
+    [append (:READ or :WRITE) and (:ACCESS or :MISS)]
+
+
+*   perf::PERF_COUNT_HW_CACHE_LL:READ:ACCESS
+        last level cache read accesses
+        aliases:
+        -> perf::LLC-LOADS
+
+*   perf::PERF_COUNT_HW_CACHE_LL:READ:MISS
+        last level cache read misses
+        aliases:
+        -> perf::LLC-LOAD-MISSES
+
+*   perf::PERF_COUNT_HW_CACHE_LL:WRITE:ACCESS
+        last level cache write accesses
+        aliases:
+        -> perf::LLC-STORES
+
+*   perf::PERF_COUNT_HW_CACHE_LL:WRITE:MISS
+        last level cache write misses
+        aliases:
+        -> perf::LLC-STORE-MISSES
+
+
+DTLB events:
+------------
+
+perf::PERF_COUNT_HW_CACHE_DTLB
+    [append (:READ or :WRITE) and (:ACCESS or :MISS)]
+    
+
+*   perf::PERF_COUNT_HW_CACHE_DTLB:READ:ACCESS
+        data translation lookaside buffer read accesses
+        aliases:
+        -> perf::DTLB-LOADS
+
+*   perf::PERF_COUNT_HW_CACHE_DTLB:READ:MISS
+        data translation lookaside buffer read misses
+        aliases:
+        -> perf::DTLB-LOAD-MISSES
+
+*   perf::PERF_COUNT_HW_CACHE_DTLB:WRITE:ACCESS
+        data translation lookaside buffer write accesses
+        aliases:
+        -> perf::DTLB-STORES
+
+*   perf::PERF_COUNT_HW_CACHE_DTLB:WRITE:MISS
+        data translation lookaside buffer write miss
+        aliases:    
+        -> perf::DTLB-STORE-MISSES
+
+
+ITLB events:
+------------
+
+perf::PERF_COUNT_HW_CACHE_ITLB
+    [append (:READ) and (:ACCESS or :MISS)]
+
+
+*   perf::PERF_COUNT_HW_CACHE_ITLB:READ:ACCESS
+        instruction translation lookaside buffer read accesses
+        aliases: 
+        -> perf::ITLB-LOADS
+
+*   perf::PERF_COUNT_HW_CACHE_ITLB:READ:MISS
+        instruction translation lookaside buffer read misses
+        aliases:
+        -> perf::ITLB-LOAD-MISSES
+
+
+BPU events:
+-----------
+
+perf::PERF_COUNT_HW_CACHE_BPU
+    [append (:READ) and (:ACCESS or :MISS)]
+
+
+*   perf::PERF_COUNT_HW_CACHE_BPU:READ:ACCESS
+        branch prediction unit read accesses
+        aliases:
+        -> perf::BRANCH-LOADS
+
+*   perf::PERF_COUNT_HW_CACHE_BPU:READ:MISS
+        branch prediction unit read misses
+        aliases:
+        -> perf::BRANCH-LOAD-MISSES
+
+
+Node memory events:
+-------------------
+
+perf::PERF_COUNT_HW_CACHE_NODE
+    [append (:READ or :WRITE) and (:ACCESS or :MISS)]
+
+
+*   perf::PERF_COUNT_HW_CACHE_NODE:READ:ACCESS
+        local memory read accesses
+        aliases:
+        -> perf::NODE-LOADS
+
+*   perf::PERF_COUNT_HW_CACHE_NODE:READ:MISS
+        local memory read misses
+        aliases:
+        -> perf::NODE-LOAD-MISSES
+
+*   perf::PERF_COUNT_HW_CACHE_NODE:WRITE:ACCESS
+        local memory write accesses
+        aliases:
+        -> perf::NODE-STORES
+
+*   perf::PERF_COUNT_HW_CACHE_NODE:WRITE:MISS
+        local memory write misses
+        aliases:
+        -> perf::NODE-STORE-MISSES
+
+==========================================================================
+
+*   UNHALTED_REFERENCE_CYCLES (NOTE: different than ix86arch::UNHALTED_REFERENCE_CYCLES)
+        counts the number of unhalted reference cycles
+
+*   BACLEARS
+        number of front-end re-steers due to BPU misprediction
+
+
+BR_INST_RETIRED
+    [append :CONDITIONAL or :NOT_TAKEN or :NEAR_TAKEN or :FAR_BRANCH]
+
+*   BR_INST_RETIRED:CONDITIONAL
+        Counts all taken and not taken macro conditional branch instructions
+
+*   BR_INST_RETIRED:NOT_TAKEN
+        Counts all not taken macro branch instructions retired
+
+*   BR_INST_RETIRED:NEAR_TAKEN
+        Counts the number of near branch taken instructions retired
+
+*   BR_INST_RETIRED:FAR_BRANCH
+        Counts the number of far branch instructions retired
+
+
+BR_MISP_RETIRED
+    [append :CONDITIONAL or :NEAR_TAKEN or :NEAR_CALL or :NEAR_RETURN]
+
+*   BR_MISP_RETIRED:CONDITIONAL
+        All mispredicted macro conditional branch instructions
+
+*   BR_MISP_RETIRED:NEAR_TAKEN
+        Number of near branch instructions retired that were mispredicted and taken
+
+*   BR_MISP_RETIRED:NEAR_CALL
+        Counts both taken and not taken retired mispredicted direct and indirect near calls, including both register and memory indirect.
+
+*   BR_MISP_RETIRED:NEAR_RETURN
+        This event counts the number of mispredicted ret instructions retired.
+
+
+BR_MISP_EXEC
+    [append :INDIRECT or :ALL_BRANCHES]
+
+*   BR_MISP_EXEC:INDIRECT
+        Speculative mispredicted indirect branches
+*   BR_MISP_EXEC:ALL_BRANCHES
+        Speculative and retired mispredicted macro conditional branches
+
+
+CPU_CLK_THREAD_UNHALTED
+    [append :REF_XCLK or :ONE_THREAD_ACTIVE or :RING0_TRANS]
+
+*   CPU_CLK_THREAD_UNHALTED:REF_XCLK
+        Count Xclk pulses (100Mhz) when the core is unhalted
+
+*   CPU_CLK_THREAD_UNHALTED:ONE_THREAD_ACTIVE
+        Counts Xclk (100Mhz) pulses when this thread is unhalted and the other thread is halted
+
+*   CPU_CLK_THREAD_UNHALTED:RING0_TRANS
+        Counts when the current privilege level transitions from ring 1, 2, or 3 to ring 0 (kernel)
+
+
+CYCLE_ACTIVITY
+    stalled cycles
+    [append to get one of the following]
+
+*   CYCLE_ACTIVITY:CYCLES_L1D_MISS
+        Cycles with pending L1D load cache misses
+
+*   CYCLE_ACTIVITY:CYCLES_L2_MISS
+        Cycles with pending L2 miss demand loads outstanding
+
+*   CYCLE_ACTIVITY:CYCLES_L3_MISS
+        Cycles with L3 cache miss demand loads outstanding
+
+*   CYCLE_ACTIVITY:CYCLES_MEM_ANY
+        Cycles when memory subsystem has at least one outstanding load
+
+*   CYCLE_ACTIVITY:STALLS_L1D_MISS
+        Execution stalls while at least one L1D demand load cache miss is outstanding
+
+*   CYCLE_ACTIVITY:STALLS_L2_MISS
+        Execution stalls while at least one L2 demand load is outstanding
+
+*   CYCLE_ACTIVITY:STALLS_L3_MISS
+        Execution stalls while at least one L3 demand load is outstanding
+
+*   CYCLE_ACTIVITY:STALLS_MEM_ANY
+        Execution stalls while at least one demand load is outstanding in the memory subsystem
+
+*   CYCLE_ACTIVITY:STALLS_TOTAL
+        Total execution stalls in cycles 
+
+
+
+DTLB_LOAD_MISSES
+
+*   DTLB_LOAD_MISSES:MISS_CAUSES_A_WALK
+        Misses in all DTLB levels that cause page walks
+
+*   DTLB_LOAD_MISSES:WALK_COMPLETED
+        Number of misses in all TLB levels causing a page walk of any page size that completes
+
+DTLB_STORE_MISSES:MISS_CAUSES_A_WALK
+DTLB_STORE_MISSES:WALK_COMPLETED
+FP_ASSIST
+ICACHE_16B
+IDQ_UOPS_NOT_DELIVERED
+INST_RETIRED
+ITLB
+ITLB_MISSES:MISS_CAUSES_A_WALK
+ITLB_MISSES:WALK_COMPLETED
+L1D
+L1D_PEND_MISS
+L2_LINES_IN
+L2_RQSTS
+L2_TRANS
+LD_BLOCKS_PARTIAL
+LOAD_HIT_PRE
+LOCK_CYCLES
+MEM_TRANS_RETIRED
+MEM_INST_RETIRED
+OTHER_ASSISTS
+RESOURCE_STALLS
+RS_EVENTS
+RTM_RETIRED
+UOPS_EXECUTED
+UOPS_ISSUED
+ARITH
+UOPS_RETIRED
+ILD_STALL
+DSB2MITE_SWITCHES
+HW_INTERRUPTS
+PARTIAL_RAT_STALLS
+OFFCORE_REQUESTS_BUFFER
+OFFCORE_RESPONSE_0:DMND_DATA_RD:ANY_RESPONSE
+OFFCORE_RESPONSE_0:DMND_RFO:ANY_RESPONSE
+OFFCORE_RESPONSE_0:DMND_CODE_RD:ANY_RESPONSE
+OFFCORE_RESPONSE_0:PF_L2_DATA_RD:ANY_RESPONSE
+OFFCORE_RESPONSE_0:PF_L2_RFO:ANY_RESPONSE
+OFFCORE_RESPONSE_0:PF_L1D_AND_SW:ANY_RESPONSE
+OFFCORE_RESPONSE_1:DMND_DATA_RD:ANY_RESPONSE
+OFFCORE_RESPONSE_1:DMND_RFO:ANY_RESPONSE
+OFFCORE_RESPONSE_1:DMND_CODE_RD:ANY_RESPONSE
+OFFCORE_RESPONSE_1:PF_L2_DATA_RD:ANY_RESPONSE
+OFFCORE_RESPONSE_1:PF_L2_RFO:ANY_RESPONSE
+OFFCORE_RESPONSE_1:PF_L1D_AND_SW:ANY_RESPONSE
+
+
+// no occurrences
+LSD
+EPT
+HLE_RETIRED
+SQ_MISC
+MEM_LOAD_MISC_RETIRED
+
+
+Questions
+
+perf_raw::r0000                         // is this to enter event by its id?
+
+BR_INST_RETIRED                         // a more precise version of BRANCH_INSTRUCTIONS_RETIRED that allows for more options
+BR_MISP_RETIRED                         // a more precise version of MISPREDICTED_BRANCH_RETIRED
+CPU_CLK_THREAD_UNHALTED                 // a more precise version of CPU_CLK_UNHALTED and UNHALTED_CORE_CYCLES
+
+HLE_RETIRED                             // important for critical sections, needed here?

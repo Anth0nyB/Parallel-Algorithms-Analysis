@@ -58,25 +58,25 @@ void papi_profile_start(int* event_sets, string event_name) {
     }
 }
 
-void papi_profile_end(int* event_sets, vector<string>& events, int first_event_id) {
+void papi_profile_end(int n_threads, int* event_sets, string event_name) {
     // Counts of the events being measured
-    long long totals[N_SIMUL_EVENTS];
-    for (int i = 0; i < N_SIMUL_EVENTS; i++) {
-        totals[i] = 0;
+    long long thread_counts[n_threads];
+    for (int i = 0; i < n_threads; i++) {
+        thread_counts[i] = 0;
     }
 
 // Each thread stops counting event and cleans up
 #pragma omp parallel
     {
-        long long thread_counts[N_SIMUL_EVENTS];
-        for (int i = 0; i < N_SIMUL_EVENTS; i++) {
-            thread_counts[i] = 0;
-        }
+        // long long thread_counts[N_SIMUL_EVENTS];
+        // for (int i = 0; i < N_SIMUL_EVENTS; i++) {
+        //     thread_counts[i] = 0;
+        // }
 
         int thread_id = omp_get_thread_num();
 
-        // the count is stored in counts[thread_id]
-        int ret = PAPI_stop(event_sets[thread_id], thread_counts);
+        // the count is stored in thread_counts[thread_id]
+        int ret = PAPI_stop(event_sets[thread_id], &thread_counts[thread_id]);
         if (ret != PAPI_OK) {
             fprintf(stderr, "Error stopping count: %s\n", PAPI_strerror(ret));
         }
@@ -84,19 +84,20 @@ void papi_profile_end(int* event_sets, vector<string>& events, int first_event_i
         PAPI_cleanup_eventset(event_sets[thread_id]);
         PAPI_destroy_eventset(&event_sets[thread_id]);
 
-// Accumulates all the counts from each thread
-#pragma omp critical
-        {
-            for (int i = 0; i < N_SIMUL_EVENTS; i++) {
-                totals[i] += thread_counts[i];
-            }
-        }
+        // // Accumulates all the counts from each thread
+        // #pragma omp critical
+        //         {
+        //             for (int i = 0; i < N_SIMUL_EVENTS; i++) {
+        //                 totals[i] += thread_counts[i];
+        //             }
+        //         }
     }
 
-    for (int i = 0; i < N_SIMUL_EVENTS; i++) {
-        cout << events.at(i + first_event_id) << ": ";
-        cout << totals[i];
-        cout << endl;
-        // cout << ",";
+    cout << event_name << ",\"";
+    for (int i = 0; i < n_threads - 1; i++) {
+        cout << thread_counts[i];
+        cout << ",";
     }
+    cout << thread_counts[n_threads - 1];
+    cout << "\"," << endl;
 }

@@ -13,6 +13,6 @@ int get_events(std::vector<std::string>& events);
 
 void papi_profile_start(int* event_sets, std::string event_name);
 
-void papi_profile_end(int* event_sets, std::vector<std::string>& events, int first_event_id);
+void papi_profile_end(int n_threads, int* event_sets, std::string event_name);
 
 #endif

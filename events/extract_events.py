@@ -1,5 +1,7 @@
-in_file_path = "../native_avail_output.txt"
-out_file_path = "../all_events.txt"
+""" Extracts all the event names from the output of papi_native_avail """
+
+in_file_path = "native_avail_output.txt"
+out_file_path = "all_events.txt"
 
 try:
     in_file = open(in_file_path, 'r')
