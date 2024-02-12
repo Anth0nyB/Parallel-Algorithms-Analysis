@@ -27,8 +27,9 @@ int get_events(vector<string>& events) {
     return events.size();
 }
 
-void papi_profile_start(int* event_sets, string event_name) {
+bool papi_profile_start(int* event_sets, string event_name, bool repeat) {
     // Each thread adds event to count
+    bool success = true;
 #pragma omp parallel
     {
         int thread_id = omp_get_thread_num();
@@ -38,41 +39,41 @@ void papi_profile_start(int* event_sets, string event_name) {
         int ret = PAPI_thread_init(pthread_self);
         if (ret != PAPI_OK) {
             fprintf(stderr, "Error initializing thread %d\n", thread_id);
+            success = false;
         }
 
         ret = PAPI_create_eventset(&event_sets[thread_id]);
         if (ret != PAPI_OK) {
             fprintf(stderr, "Error creating eventset: %s\n", PAPI_strerror(ret));
+            success = false;
         }
 
         ret = PAPI_add_named_event(event_sets[thread_id], event_name.c_str());
         if (ret != PAPI_OK) {
             fprintf(stderr, "Error adding event \"%s\": %s\n", event_name.c_str(), PAPI_strerror(ret));
+            success = false;
         }
 
         PAPI_reset(event_sets[thread_id]);
         ret = PAPI_start(event_sets[thread_id]);
         if (ret != PAPI_OK) {
             fprintf(stderr, "Error starting: %s\n", PAPI_strerror(ret));
+            success = false;
         }
     }
+    return success || repeat;
 }
 
-void papi_profile_end(int n_threads, int* event_sets, string event_name) {
+void papi_profile_end(int n_threads, int* event_sets, string event_name, bool successful_start) {
     // Counts of the events being measured
     long long thread_counts[n_threads];
     for (int i = 0; i < n_threads; i++) {
         thread_counts[i] = 0;
     }
 
-// Each thread stops counting event and cleans up
+    // Each thread stops counting event and cleans up
 #pragma omp parallel
     {
-        // long long thread_counts[N_SIMUL_EVENTS];
-        // for (int i = 0; i < N_SIMUL_EVENTS; i++) {
-        //     thread_counts[i] = 0;
-        // }
-
         int thread_id = omp_get_thread_num();
 
         // the count is stored in thread_counts[thread_id]
@@ -83,21 +84,14 @@ void papi_profile_end(int n_threads, int* event_sets, string event_name) {
 
         PAPI_cleanup_eventset(event_sets[thread_id]);
         PAPI_destroy_eventset(&event_sets[thread_id]);
-
-        // // Accumulates all the counts from each thread
-        // #pragma omp critical
-        //         {
-        //             for (int i = 0; i < N_SIMUL_EVENTS; i++) {
-        //                 totals[i] += thread_counts[i];
-        //             }
-        //         }
     }
 
-    cout << event_name << ",\"";
-    for (int i = 0; i < n_threads - 1; i++) {
-        cout << thread_counts[i];
-        cout << ",";
+    if (successful_start) {
+        long long sum = 0;
+        for (int i = 0; i < n_threads - 1; i++) {
+            sum += thread_counts[i];
+        }
+
+        cout << sum / n_threads << ",";
     }
-    cout << thread_counts[n_threads - 1];
-    cout << "\"," << endl;
 }

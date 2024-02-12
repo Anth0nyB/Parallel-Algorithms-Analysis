@@ -18,13 +18,13 @@ mklflags = libmkl_blas95_ilp64.a -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
 
 all: ob mkl def
 
-ob: dgemm.cpp
+ob: dgemm.cpp ../perf.cpp
 	${CC} -o dgemm_ob ${flags} ${papiflags} ../perf.cpp dgemm.cpp ${liblapack_ob} ${OPENBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
-mkl: dgemm.cpp
+mkl: dgemm.cpp ../perf.cpp
 	${CC} -o dgemm_mkl ${flags} ${papiflags} ../perf.cpp dgemm.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 	
-def: dgemm.cpp
+def: dgemm.cpp ../perf.cpp
 	${CC} -o dgemm_def ${flags} ${papiflags} ../perf.cpp dgemm.cpp ${liblapack_def} ${REFBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
 clean:

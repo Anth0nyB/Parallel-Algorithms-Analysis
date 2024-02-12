@@ -73,24 +73,36 @@ int main(int argc, char **argv) {
     fillSym(A, m, m);
     fillMat(B, m * n);
 
+    cout << n_threads << " " << m / 1000 << "k " << n / 1000 << "k ,";
+
+    double avg_time = 0;
+
     // Run dsymm for all events
-    double average_time = 0;
+    bool repeat = false;
     for (int i = 0; i < n_events; ++i) {
         fillMat(C, m * n, 0);
 
-        papi_profile_start(event_sets, events.at(i));
+        if (!papi_profile_start(event_sets, events.at(i), repeat)) {
+            // Sometimes events fail to add on one thread, so try once more if this is the case
+            papi_profile_end(n_threads, event_sets, events.at(i), false);
+            fprintf(stderr, "Error setting up event: %s\nTrying once more\n", events.at(i).c_str());
+            i--;
+            repeat = true;
+            continue;
+        }
 
-        double start, end;
-        start = omp_get_wtime();
+        avg_time -= omp_get_wtime();
 
         dsymm_(&Lchar, &Uchar, &m, &n, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
 
-        end = omp_get_wtime();
-        average_time += end - start;
+        avg_time += omp_get_wtime();
 
-        papi_profile_end(n_threads, event_sets, events.at(i));
+        papi_profile_end(n_threads, event_sets, events.at(i), true);
+
+        repeat = false;
     }
-    cout << "Runtime: " << average_time / n_events << endl;
+
+    cout << avg_time / n_events << "," << endl;
 
     PAPI_shutdown();
     delete[] A;

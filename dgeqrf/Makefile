@@ -11,20 +11,20 @@ PAPI_INCLUDE = ../libs/papi-7.0.1/include
 PAPI_LIB = ../libs/papi-7.0.1/lib
 MKL_LIB = ${MKLROOT}/lib/intel64
 
-flags = -lgfortran -lpthread -lgomp -fopenmp
+flags = -lgfortran -lpthread -lgomp -fopenmp -O3
 papiflags = -lpapi -lpfm
 mklflags = libmkl_blas95_ilp64.a -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
 
 
 all: ob mkl def
 
-ob: dgeqrf.cpp
+ob: dgeqrf.cpp ../perf.cpp
 	${CC} -o dgeqrf_ob ${flags} ${papiflags} ../perf.cpp dgeqrf.cpp ${liblapack_ob} ${OPENBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
-mkl: dgeqrf.cpp
+mkl: dgeqrf.cpp ../perf.cpp
 	${CC} -o dgeqrf_mkl ${flags} ${papiflags} ../perf.cpp dgeqrf.cpp -L ${mklflags} -L${MKL_LIB} ${liblapack_mkl} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
-def: dgeqrf.cpp
+def: dgeqrf.cpp ../perf.cpp
 	${CC} -o dgeqrf_def ${flags} ${papiflags} ../perf.cpp dgeqrf.cpp ${liblapack_def} ${REFBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
 clean:
