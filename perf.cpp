@@ -92,6 +92,6 @@ void papi_profile_end(int n_threads, int* event_sets, string event_name, bool su
             sum += thread_counts[i];
         }
 
-        cout << sum << "," << endl;
+        cout << sum << ",";
     }
 }

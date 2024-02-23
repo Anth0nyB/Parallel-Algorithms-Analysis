@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
         repeat = false;
     }
 
-    cout << avg_time / n_events << ",";
+    cout << avg_time / n_events << "," << endl;
 
     PAPI_shutdown();
     delete[] A;

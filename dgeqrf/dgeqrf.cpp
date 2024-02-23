@@ -13,7 +13,7 @@ extern int dgeqrf_(LAPACK_INT *m, LAPACK_INT *n, double *A, LAPACK_INT *lda, dou
 }
 
 void fillMat(double *mat, int len) {
-#pragma omp parallel for
+#pragma omp parallel for num_threads(48)
     for (int i = 0; i < len; i++) {
         mat[i] = (double)(i);
     }
@@ -68,13 +68,18 @@ int main(int argc, char **argv) {
         if (!papi_profile_start(event_sets, events.at(i), repeat)) {
             // Sometimes events fail to add on one thread, so try once more if this is the case
             papi_profile_end(n_threads, event_sets, events.at(i), false);
+            fprintf(stderr, "Error setting up event: %s\nTrying once more\n", events.at(i).c_str());
             delete[] work;
             i--;
             repeat = true;
             continue;
         }
 
+        avg_time -= omp_get_wtime();
+
         dgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+
+        avg_time += omp_get_wtime();
 
         papi_profile_end(n_threads, event_sets, events.at(i), true);
 
