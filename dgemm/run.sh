@@ -30,13 +30,13 @@ done < "$events"
 printf "Runtime,\n" >> "data/dgemm_ob.csv"
 
 for m in 10000 20000 30000; do
-    for k in 10000 20000 30000; do 
-        for n in 10000 20000 30000; do
-            for threads in 4 12 24 48 96; do
+    for k in 30000; do 
+        # for n in 10000 20000 30000; do
+            for threads in 4 12 20 36 48; do
                 export OMP_NUM_THREADS=${threads}
-                ./dgemm_ob ${m} ${k} ${n} >> "data/dgemm_ob.csv"
+                ./dgemm_ob ${m} ${k} ${m} >> "data/dgemm_ob.csv"
             done
-        done
+        # done
     done
 done
 
@@ -50,14 +50,14 @@ done < "$events"
 printf "Runtime,\n" >> "data/dgemm_mkl.csv"
 
 for m in 10000 20000 30000; do
-    for k in 10000 20000 30000; do 
-        for n in 10000 20000 30000; do
-            for threads in 4 12 24 48 96; do
+    for k in 30000; do 
+        # for n in 10000 20000 30000; do
+            for threads in 4 12 20 36 48; do
                 export MKL_NUM_THREADS=${threads}
                 export OMP_NUM_THREADS=${threads}
-                ./dgemm_mkl ${m} ${k} ${n} >> "data/dgemm_mkl.csv"
+                ./dgemm_mkl ${m} ${k} ${m} >> "data/dgemm_mkl.csv"
             done
-        done
+        # done
     done
 done
 

@@ -8,17 +8,12 @@
 
 using namespace std;
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 void dgemm_(char *TRANSA, char *TRANSB, LAPACK_INT *m, LAPACK_INT *n, LAPACK_INT *k, double *ALPHA, double *A, LAPACK_INT *LDA, double *B, LAPACK_INT *LDB, double *BETA, double *C, LAPACK_INT *LDC);
-
-#ifdef __cplusplus
 }
-#endif
 
 void fillMat(double *mat, int len, int fill = 1) {
-#pragma omp parallel for
+#pragma omp parallel for num_threads(48)
     for (int i = 0; i < len; i++) {
         mat[i] = (double)(i * fill);
     }
@@ -93,7 +88,7 @@ int main(int argc, char **argv) {
         repeat = false;
     }
 
-    cout << avg_time / n_events << "," << endl;
+    cout << avg_time / n_events << ",";
 
     PAPI_shutdown();
     delete[] A;

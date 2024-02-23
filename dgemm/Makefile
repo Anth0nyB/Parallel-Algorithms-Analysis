@@ -11,12 +11,12 @@ PAPI_INCLUDE = ../libs/papi-7.0.1/include
 PAPI_LIB = ../libs/papi-7.0.1/lib
 MKL_LIB = ${MKLROOT}/lib/intel64
 
-flags = -lgfortran -lpthread -lgomp -fopenmp
+flags = -lgfortran -lpthread -lgomp -fopenmp -O3
 papiflags = -lpapi -lpfm
 mklflags = libmkl_blas95_ilp64.a -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
 
 
-all: ob mkl def
+main: ob mkl def
 
 ob: dgemm.cpp ../perf.cpp
 	${CC} -o dgemm_ob ${flags} ${papiflags} ../perf.cpp dgemm.cpp ${liblapack_ob} ${OPENBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
@@ -27,5 +27,8 @@ mkl: dgemm.cpp ../perf.cpp
 def: dgemm.cpp ../perf.cpp
 	${CC} -o dgemm_def ${flags} ${papiflags} ../perf.cpp dgemm.cpp ${liblapack_def} ${REFBLAS} -I${PAPI_INCLUDE} -L${PAPI_LIB}
 
+naive: dgemm.cpp ../perf.cpp naive_dgemm.cpp
+	${CC} -o dgemm_naive ${flags} ${papiflags} dgemm.cpp naive_dgemm.cpp ../perf.cpp -I${PAPI_INCLUDE} -L${PAPI_LIB}
+
 clean:
-	rm dgemm_ob dgemm_mkl dgemm_def
+	rm dgemm_ob dgemm_mkl dgemm_def dgemm_naive

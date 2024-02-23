@@ -88,10 +88,10 @@ void papi_profile_end(int n_threads, int* event_sets, string event_name, bool su
 
     if (successful_start) {
         long long sum = 0;
-        for (int i = 0; i < n_threads - 1; i++) {
+        for (int i = 0; i < n_threads; i++) {
             sum += thread_counts[i];
         }
 
-        cout << sum / n_threads << ",";
+        cout << sum << "," << endl;
     }
 }

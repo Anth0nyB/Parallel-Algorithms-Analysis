@@ -56,11 +56,9 @@ int main(int argc, char **argv) {
     fillMat(A, lda * n);
     double *work;
 
-    // setup for per thread execution time
-    double thread_times[n_threads];
-    for (int i = 0; i < n_threads; i++) {
-        thread_times[i] = 0;
-    }
+    cout << n_threads << " " << m / 1000 << "k " << n / 1000 << "k ,";
+
+    double avg_time = 0;
 
     bool repeat = false;
     for (int i = 0; i < n_events; ++i) {
@@ -85,15 +83,9 @@ int main(int argc, char **argv) {
         repeat = false;
     }
 
-    cout << "Runtime,\"";
-    for (int i = 0; i < n_threads - 1; i++) {
-        cout << thread_times[i] / n_events << ",";
-    }
-    cout << thread_times[n_threads - 1] / n_events;
-    cout << "\"" << endl;
+    cout << avg_time / n_events << "," << endl;
 
     PAPI_shutdown();
-
     delete[] A;
     delete[] tau;
 
