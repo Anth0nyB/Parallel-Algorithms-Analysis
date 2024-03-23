@@ -13,14 +13,14 @@ void dsymm_(char *SIDE, char *UPLO, LAPACK_INT *m, LAPACK_INT *n, double *ALPHA,
 }
 
 void fillMat(double *mat, int len, int fill = 1) {
-#pragma omp parallel for
+#pragma omp parallel for num_threads(48)
     for (int i = 0; i < len; i++) {
         mat[i] = (double)(i * fill);
     }
 }
 
 void fillSym(double *mat, int m, int n) {
-#pragma omp parallel for
+#pragma omp parallel for num_threads(48)
     for (int row = 0; row < m; row++) {
         for (int col = 0; col < n; col++) {
             mat[row * n + col] = row * col;
