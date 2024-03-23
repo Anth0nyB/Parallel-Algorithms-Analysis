@@ -29,10 +29,10 @@ while IFS= read -r line; do
 done < "$events"
 printf "Runtime,\n" >> "data/dgemm_naive.csv"
 
-for m in 10000 20000 30000; do
-    for k in 30000; do 
+for m in 2000 4000 8000; do
+    for k in 4000; do 
         # for n in  30000; do
-            for threads in 4 12 20 36 48; do
+            for threads in 1 4 12 20 36 48; do
                 export OMP_NUM_THREADS=${threads}
                 ./dgemm_naive ${m} ${k} ${m} >> "data/dgemm_naive.csv"
             done

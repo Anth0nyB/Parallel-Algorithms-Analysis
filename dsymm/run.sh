@@ -31,7 +31,7 @@ printf "Runtime,\n" >> "data/dsymm_ob.csv"
 
 for m in 10000 20000 30000; do
     for n in 10000 30000; do 
-        for threads in 4 12 20 36 48; do
+        for threads in 1 4 12 20 36 48; do
             export OMP_NUM_THREADS=${threads}
             ./dsymm_ob ${m} ${n} >> "data/dsymm_ob.csv"
         done
@@ -46,7 +46,7 @@ printf "Runtime,\n" >> "data/dsymm_mkl.csv"
 
 for m in 10000 20000 30000; do
     for n in 10000 30000; do 
-        for threads in 4 12 20 36 48; do
+        for threads in 1 4 12 20 36 48; do
             export MKL_NUM_THREADS=${threads}
             export OMP_NUM_THREADS=${threads}   # for omp parallel blocks that set up counters
             ./dsymm_mkl ${m} ${n} >> "data/dsymm_mkl.csv"

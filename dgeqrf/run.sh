@@ -29,9 +29,9 @@ while IFS= read -r line; do
 done < "$events"
 printf "Runtime,\n" >> "data/dgeqrf_ob.csv"
 
-for m in 10000 30000; do
-    for n in 10000 30000; do 
-        for threads in 4 12 20 36 48; do
+for m in 30000 50000 70000; do
+    for n in 1000 4000; do 
+        for threads in 1 4 12 20 36 48; do
             export OMP_NUM_THREADS=${threads}
             ./dgeqrf_ob ${m} ${n} >> "data/dgeqrf_ob.csv"
         done
@@ -44,9 +44,9 @@ while IFS= read -r line; do
 done < "$events"
 printf "Runtime,\n" >> "data/dgeqrf_mkl.csv"
 
-for m in 10000 30000; do
-    for n in 10000 30000; do 
-        for threads in 4 12 20 36 48; do
+for m in 30000 50000 70000; do
+    for n in 1000 4000; do 
+        for threads in 1 4 12 20 36 48; do
             export MKL_NUM_THREADS=${threads}
             export OMP_NUM_THREADS=${threads}   # for omp parallel blocks that set up counters
             ./dgeqrf_mkl ${m} ${n} >> "data/dgeqrf_mkl.csv"
