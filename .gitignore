@@ -2,5 +2,4 @@ libs/
 .vscode/
 Dashing/
 */data
-*/console.out
-*/n_console.out
+**/*.out
