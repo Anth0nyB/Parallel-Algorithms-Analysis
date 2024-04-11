@@ -27,7 +27,7 @@ int get_events(vector<string>& events) {
     return events.size();
 }
 
-bool papi_profile_start(int* event_sets, string event_name, bool repeat) {
+bool papi_profile_start(int* event_sets, string event_name) {
     // Each thread adds event to count
     bool success = true;
 #pragma omp parallel
@@ -61,10 +61,10 @@ bool papi_profile_start(int* event_sets, string event_name, bool repeat) {
             success = false;
         }
     }
-    return success || repeat;
+    return success;
 }
 
-void papi_profile_end(int n_threads, int* event_sets, string event_name, bool successful_start) {
+long long papi_profile_end(int n_threads, int* event_sets, string event_name) {
     // Counts of the events being measured
     long long thread_counts[n_threads];
     for (int i = 0; i < n_threads; i++) {
@@ -86,12 +86,18 @@ void papi_profile_end(int n_threads, int* event_sets, string event_name, bool su
         PAPI_destroy_eventset(&event_sets[thread_id]);
     }
 
-    if (successful_start) {
-        long long sum = 0;
-        for (int i = 0; i < n_threads; i++) {
-            sum += thread_counts[i];
-        }
+    long long sum = 0;
+    for (int i = 0; i < n_threads; i++) {
+        sum += thread_counts[i];
+    }
 
-        cout << sum << ",";
+    return sum;
+}
+
+void papi_clear_counts(int* event_sets) {
+#pragma omp parallel
+    {
+        int thread_id = omp_get_thread_num();
+        PAPI_reset(event_sets[thread_id]);
     }
 }

@@ -10,8 +10,10 @@
 
 int get_events(std::vector<std::string>& events);
 
-bool papi_profile_start(int* event_sets, std::string event_name, bool repeat);
+bool papi_profile_start(int* event_sets, std::string event_name);
 
-void papi_profile_end(int n_threads, int* event_sets, std::string event_name, bool successful_start);
+long long papi_profile_end(int n_threads, int* event_sets, std::string event_name);
+
+void papi_clear_counts(int* event_sets);
 
 #endif
