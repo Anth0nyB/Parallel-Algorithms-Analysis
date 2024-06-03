@@ -1,0 +1,133 @@
+dgeqrf_ob_nb38_cores_close:
+  data: "data/dgeqrf/ob/nb_38/cores_close_dgeqrf_ob.csv"
+  procs:
+    - 1
+    - 4
+    - 12
+    - 20
+    - 36
+    - 48
+  tasks:
+    - modules.resource_score.compute_rsm_task_all_regions
+    #- viz.barchart.create_rsm_error_barchart
+    - viz.barchart.create_rsm_percent_barchart
+    - viz.heatmap.create_heatmap
+    - viz.sunburst.sunburst
+    - viz.linechart.raw_values_per_proc_config
+    # - viz.barchart.load_imbalance
+  rsm_use_nn_solver: True
+  name: "dgeqrf_ob_nb38_cores_close"
+dgeqrf_ob_nb38_cores_spread:
+  data: "data/dgeqrf/ob/nb_38/cores_spread_dgeqrf_ob.csv"
+  procs:
+    - 1
+    - 4
+    - 12
+    - 20
+    - 36
+    - 48
+  tasks:
+    - modules.resource_score.compute_rsm_task_all_regions
+    #- viz.barchart.create_rsm_error_barchart
+    - viz.barchart.create_rsm_percent_barchart
+    - viz.heatmap.create_heatmap
+    - viz.sunburst.sunburst
+    - viz.linechart.raw_values_per_proc_config
+    # - viz.barchart.load_imbalance
+  rsm_use_nn_solver: True
+  name: "dgeqrf_ob_nb38_cores_spread"
+
+dgeqrf_ob_nb38_sockets_close:
+  data: "data/dgeqrf/ob/nb_38/sockets_close_dgeqrf_ob.csv"
+  procs:
+    - 1
+    - 4
+    - 12
+    - 20
+    - 36
+    - 48
+  tasks:
+    - modules.resource_score.compute_rsm_task_all_regions
+    #- viz.barchart.create_rsm_error_barchart
+    - viz.barchart.create_rsm_percent_barchart
+    - viz.heatmap.create_heatmap
+    - viz.sunburst.sunburst
+    - viz.linechart.raw_values_per_proc_config
+    # - viz.barchart.load_imbalance
+  rsm_use_nn_solver: True
+  name: "dgeqrf_ob_nb38_sockets_close"
+dgeqrf_ob_nb38_sockets_spread:
+  data: "data/dgeqrf/ob/mb_38/sockets_spread_dgeqrf_ob.csv"
+  procs:
+    - 1
+    - 4
+    - 12
+    - 20
+    - 36
+    - 48
+  tasks:
+    - modules.resource_score.compute_rsm_task_all_regions
+    #- viz.barchart.create_rsm_error_barchart
+    - viz.barchart.create_rsm_percent_barchart
+    - viz.heatmap.create_heatmap
+    - viz.sunburst.sunburst
+    - viz.linechart.raw_values_per_proc_config
+    # - viz.barchart.load_imbalance
+  rsm_use_nn_solver: True
+  name: "dgeqrf_ob_nb38_sockets_spread"
+
+dgeqrf_ob_nb38_threads_close:
+  data: "data/dgeqrf/ob/nb_38/threads_close_dgeqrf_ob.csv"
+  procs:
+    - 1
+    - 4
+    - 12
+    - 20
+    - 36
+    - 48
+  tasks:
+    - modules.resource_score.compute_rsm_task_all_regions
+    #- viz.barchart.create_rsm_error_barchart
+    - viz.barchart.create_rsm_percent_barchart
+    - viz.heatmap.create_heatmap
+    - viz.sunburst.sunburst
+    - viz.linechart.raw_values_per_proc_config
+    # - viz.barchart.load_imbalance
+  rsm_use_nn_solver: True
+  name: "dgeqrf_ob_nb38_threads_close"
+dgeqrf_ob_nb38_threads_spread:
+  data: "data/dgeqrf/ob/nb_38/threads_spread_dgeqrf_ob.csv"
+  procs:
+    - 1
+    - 4
+    - 12
+    - 20
+    - 36
+    - 48
+  tasks:
+    - modules.resource_score.compute_rsm_task_all_regions
+    #- viz.barchart.create_rsm_error_barchart
+    - viz.barchart.create_rsm_percent_barchart
+    - viz.heatmap.create_heatmap
+    - viz.sunburst.sunburst
+    - viz.linechart.raw_values_per_proc_config
+    # - viz.barchart.load_imbalance
+  rsm_use_nn_solver: True
+  name: "dgeqrf_ob_nb38_threads_spread"
+
+main:
+  tasks:
+    - dgeqrf_ob_nb38_cores_close
+    - dgeqrf_ob_nb38_cores_spread
+    - dgeqrf_ob_nb38_sockets_close
+    - dgeqrf_ob_nb38_sockets_spread
+    - dgeqrf_ob_nb38_threads_close
+    - dgeqrf_ob_nb38_threads_spread
+    - viz.dashboard.dashboard_init
+
+  arch: wave_cpu
+  data_rescale: True
+  rsm_iters: 1000
+  rsm_print: True
+  rsm_use_nn_solver: False
+  port: 7500
