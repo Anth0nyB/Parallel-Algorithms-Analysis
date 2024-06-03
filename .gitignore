@@ -1,5 +1,9 @@
 libs/
 .vscode/
-Dashing/
-*/data
+dgels/data
+dgemm/data
+dgeqrf/data
+dsymm/data
 **/*.out
+**/__pycache__
+**/*.pkl
