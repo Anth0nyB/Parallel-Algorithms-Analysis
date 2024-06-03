@@ -1,12 +1,13 @@
 #!/bin/bash 
 # 
-#SBATCH --job-name=dgeqrf
-#SBATCH --output=console.out
+#SBATCH --job-name=sockets_close_dgeqrf
+#SBATCH --output=sockets_close_console.out
 # 
 #SBATCH --partition=cpu
 #SBATCH --nodes=1 
 #SBATCH --ntasks=1 
-#SBATCH --cpus-per-task=96
+#SBATCH --cpus-per-task=48
+#SBATCH --exclusive
 #SBATCH --mem-per-cpu=4G
 #SBATCH --time=4-00:00:00 
 #
@@ -17,42 +18,44 @@
 # Load the modules and environment variables
 source ../environment.env
 
-# Compile the program
-make > /dev/null
-
-# Run the Program
+# Define variables
 events="../events/hand_picked_events.txt"
+job="sockets_close_dgeqrf"
 
-printf "problem size," > "data/dgeqrf_ob.csv"
+# Print column labels for OpenBLAS
+printf "problem size," > "data/${job}_ob.csv"
 while IFS= read -r line; do
-    printf "%s," "$line" >> "data/dgeqrf_ob.csv"
+    printf "%s," "$line" >> "data/${job}_ob.csv"
 done < "$events"
-printf "Runtime,\n" >> "data/dgeqrf_ob.csv"
+printf "Runtime,\n" >> "data/${job}_ob.csv"
 
-for m in 30000 50000 70000; do
+# Run OpenBLAS
+for m in 20000 50000; do
     for n in 1000 4000; do 
         for threads in 1 4 12 20 36 48; do
             export OMP_NUM_THREADS=${threads}
-            ./dgeqrf_ob ${m} ${n} >> "data/dgeqrf_ob.csv"
+            ./dgeqrf_ob ${m} ${n} >> "data/${job}_ob.csv"
         done
     done
 done
 
-printf "problem size," > "data/dgeqrf_mkl.csv"
-while IFS= read -r line; do
-    printf "%s," "$line" >> "data/dgeqrf_mkl.csv"
-done < "$events"
-printf "Runtime,\n" >> "data/dgeqrf_mkl.csv"
 
-for m in 30000 50000 70000; do
+
+# Print column labels for MKL
+printf "problem size," > "data/${job}_mkl.csv"
+while IFS= read -r line; do
+    printf "%s," "$line" >> "data/${job}_mkl.csv"
+done < "$events"
+printf "Runtime,\n" >> "data/${job}_mkl.csv"
+
+# Run MKL
+for m in 20000 50000; do
     for n in 1000 4000; do 
         for threads in 1 4 12 20 36 48; do
             export MKL_NUM_THREADS=${threads}
             export OMP_NUM_THREADS=${threads}   # for omp parallel blocks that set up counters
-            ./dgeqrf_mkl ${m} ${n} >> "data/dgeqrf_mkl.csv"
+            ./dgeqrf_mkl ${m} ${n} >> "data/${job}_mkl.csv"
         done
     done
 done
-
-make clean > /dev/null
 
