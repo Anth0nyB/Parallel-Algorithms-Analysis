@@ -57,7 +57,7 @@ dgeqrf_ob_nb38_sockets_close:
   rsm_use_nn_solver: True
   name: "dgeqrf_ob_nb38_sockets_close"
 dgeqrf_ob_nb38_sockets_spread:
-  data: "data/dgeqrf/ob/mb_38/sockets_spread_dgeqrf_ob.csv"
+  data: "data/dgeqrf/ob/nb_38/sockets_spread_dgeqrf_ob.csv"
   procs:
     - 1
     - 4

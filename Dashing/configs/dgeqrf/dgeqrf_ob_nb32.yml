@@ -57,7 +57,7 @@ dgeqrf_ob_nb32_sockets_close:
   rsm_use_nn_solver: True
   name: "dgeqrf_ob_nb32_sockets_close"
 dgeqrf_ob_nb32_sockets_spread:
-  data: "data/dgeqrf/ob/mb_32/sockets_spread_dgeqrf_ob.csv"
+  data: "data/dgeqrf/ob/nb_32/sockets_spread_dgeqrf_ob.csv"
   procs:
     - 1
     - 4
@@ -115,8 +115,29 @@ dgeqrf_ob_nb32_threads_spread:
   rsm_use_nn_solver: True
   name: "dgeqrf_ob_nb32_threads_spread"
 
+dgeqrf_ob:
+  data: "data/dgeqrf/ob/nb_32/dgeqrf_ob.csv"
+  procs:
+    - 1
+    - 4
+    - 12
+    - 20
+    - 36
+    - 48
+  tasks:
+    - modules.resource_score.compute_rsm_task_all_regions
+    #- viz.barchart.create_rsm_error_barchart
+    - viz.barchart.create_rsm_percent_barchart
+    - viz.heatmap.create_heatmap
+    - viz.sunburst.sunburst
+    - viz.linechart.raw_values_per_proc_config
+    # - viz.barchart.load_imbalance
+  rsm_use_nn_solver: True
+  name: "dgeqrf_ob"
+
 main:
   tasks:
+    - dgeqrf_ob
     - dgeqrf_ob_nb32_cores_close
     - dgeqrf_ob_nb32_cores_spread
     - dgeqrf_ob_nb32_sockets_close
